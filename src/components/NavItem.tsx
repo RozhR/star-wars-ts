@@ -1,11 +1,12 @@
-import {SWContext} from "../utils/context.ts";
-import {useContext} from "react";
 import Button from "./ui/Button.tsx";
+import {NavLink} from "react-router";
 
-const NavItem = ({itemTitle}: {itemTitle: string}) => {
-    const {changePage} = useContext(SWContext);
+const NavItem = ({itemTitle}: { itemTitle: string }) => {
+
     return (
-        <Button callback={() => changePage(itemTitle)}>{itemTitle}</Button>
+        <NavLink to={`/${itemTitle.toLowerCase()}`}>
+            <Button>{itemTitle}</Button>
+        </NavLink>
     )
 }
 
