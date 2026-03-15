@@ -1,12 +1,12 @@
-import {characters, defaultHero, period_month} from "../utils/constants.ts";
+import {characters, period_month} from "../utils/constants.ts";
 import {useContext, useEffect, useState} from "react";
-import {useParams} from "react-router";
-import ErrorPage from "./ErrorPage.tsx";
+import HeroGuard from "./ui/HeroGuard.tsx";
+import {useHero} from "./ui/useHero.ts";
 import {SWContext} from "../utils/context.ts";
 
 const AboutMe = () => {
-    const {changeHero} = useContext(SWContext)
-    const {heroId = defaultHero} = useParams();
+    const {heroId, isHeroExists} = useHero();
+    const {changeHero} = useContext(SWContext);
     const [hero, setHero] = useState(() => {
         const hero = JSON.parse(localStorage.getItem(heroId)!);
         if (hero && ((Date.now() - hero.timestamp) < period_month)) {
@@ -42,17 +42,19 @@ const AboutMe = () => {
         }
     }, [heroId]);
 
-    return (heroId in characters) ? (
-        <>
-            {(!!hero) &&
-                <div className={'text-3xl text-justify tracking-widest leading-14 ml-8'}>
-                    {Object.keys(hero).map(key => <p key={key}>
-                        <span className={'text-3xl capitalize'}>{key.replace('_', ' ')}</span>: {hero[key]}
-                    </p>)}
-                </div>
-            }
-        </>
-    ) : <ErrorPage/>
+    return (
+        <HeroGuard isExists={isHeroExists}>
+            <>
+                {(!!hero) &&
+                    <div className={'text-3xl text-justify tracking-widest leading-14 ml-8'}>
+                        {Object.keys(hero).map(key => <p key={key}>
+                            <span className={'text-3xl capitalize'}>{key.replace('_', ' ')}</span>: {hero[key]}
+                        </p>)}
+                    </div>
+                }
+            </>
+        </HeroGuard>
+    );
 }
 
 export default AboutMe;
