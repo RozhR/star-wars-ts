@@ -1,17 +1,12 @@
 import {starWarsInfo} from "../utils/constants.ts";
 import Text from "./ui/Text.tsx";
-import {useHero} from "./ui/useHero.ts";
-import HeroGuard from "./ui/HeroGuard.tsx";
-
+import ErrorPage from "./ErrorPage.tsx";
+import {useValidHero} from "../hooks/customHooks.ts";
 
 const StarWars = () => {
-    const {isHeroExists} = useHero();
+    const {isHeroValid} = useValidHero();
 
-    return (
-        <HeroGuard isExists={isHeroExists}>
-            <Text>{starWarsInfo}</Text>
-        </HeroGuard>
-    );
+    return isHeroValid ? <Text>{starWarsInfo}</Text> : <ErrorPage/>
 }
 
 export default StarWars;

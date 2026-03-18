@@ -1,20 +1,19 @@
 import OpeningCrawl from "./OpeningCrawl.tsx";
 import Hero from "./Hero.tsx";
 import DreamTeam from "./DreamTeam.tsx";
-import {useHero} from "./ui/useHero.ts";
-import HeroGuard from "./ui/HeroGuard.tsx";
+import ErrorPage from "./ErrorPage.tsx";
+import {useValidHero} from "../hooks/customHooks.ts";
 
 const Home = () => {
-    const {isHeroExists} = useHero();
+    const {isHeroValid} = useValidHero();
 
-    return (
-        <HeroGuard isExists={isHeroExists}>
-            <main>
-                <Hero/>
-                <DreamTeam/>
-                <OpeningCrawl/>
-            </main>
-        </HeroGuard>
-    );
+    return isHeroValid ? (
+        <main>
+            <Hero/>
+            <DreamTeam/>
+            <OpeningCrawl/>
+        </main>
+    ) : <ErrorPage/>
 }
+
 export default Home;

@@ -1,12 +1,10 @@
 import {characters, period_month} from "../utils/constants.ts";
-import {useContext, useEffect, useState} from "react";
-import HeroGuard from "./ui/HeroGuard.tsx";
-import {useHero} from "./ui/useHero.ts";
-import {SWContext} from "../utils/context.ts";
+import {useEffect, useState} from "react";
+import ErrorPage from "./ErrorPage.tsx";
+import {useValidHero} from "../hooks/customHooks.ts";
 
 const AboutMe = () => {
-    const {heroId, isHeroExists} = useHero();
-    const {changeHero} = useContext(SWContext);
+    const {isHeroValid, heroId} = useValidHero();
     const [hero, setHero] = useState(() => {
         const hero = JSON.parse(localStorage.getItem(heroId)!);
         if (hero && ((Date.now() - hero.timestamp) < period_month)) {
@@ -15,11 +13,7 @@ const AboutMe = () => {
     });
 
     useEffect(() => {
-        if (!(heroId in characters)) {
-            return;
-        }
-        changeHero(heroId);
-        if (!hero) {
+        if (isHeroValid && !hero) {
             fetch(`${characters[heroId].url}`)
                 .then(response => response.json())
                 .then(data => {
@@ -40,21 +34,19 @@ const AboutMe = () => {
                     }));
                 })
         }
-    }, [heroId]);
+    }, [heroId])
 
-    return (
-        <HeroGuard isExists={isHeroExists}>
-            <>
-                {(!!hero) &&
-                    <div className={'text-3xl text-justify tracking-widest leading-14 ml-8'}>
-                        {Object.keys(hero).map(key => <p key={key}>
-                            <span className={'text-3xl capitalize'}>{key.replace('_', ' ')}</span>: {hero[key]}
-                        </p>)}
-                    </div>
-                }
-            </>
-        </HeroGuard>
-    );
+    return isHeroValid ? (
+        <>
+            {(!!hero) &&
+                <div className={'text-3xl text-justify tracking-widest leading-14 ml-8'}>
+                    {Object.keys(hero).map(key => <p key={key}>
+                        <span className={'text-3xl capitalize'}>{key.replace('_', ' ')}</span>: {hero[key]}
+                    </p>)}
+                </div>
+            }
+        </>
+    ) : <ErrorPage/>
 }
 
 export default AboutMe;
